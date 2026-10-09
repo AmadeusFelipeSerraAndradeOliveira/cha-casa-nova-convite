@@ -15,7 +15,7 @@ import { db } from "./firebase-config.js";
 // CONFIGURAÇÕES
 // =============================================
 
-const DATA_EVENTO = new Date(2026, 11, 18, 18, 0, 0);
+const DATA_EVENTO = new Date(2026, 11, 12, 18, 0, 0);
 
 const listaPresentes = document.getElementById("lista-presentes");
 const formRsvp = document.getElementById("form-rsvp");
