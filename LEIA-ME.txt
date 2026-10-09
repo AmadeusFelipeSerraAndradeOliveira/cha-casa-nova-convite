@@ -9,17 +9,3 @@ Arquivos:
 - firebase-config.js: configuração do projeto Firebase existente.
 - firestore.rules: regras sugeridas para o Firestore.
 
-ANTES DE PUBLICAR:
-1. Faça backup dos arquivos atuais.
-2. Confira se firebase-config.js aponta para o projeto correto.
-3. No Firebase Console > Firestore Database > Rules, revise e publique o conteúdo de firestore.rules.
-4. Confirme que o usuário administrador no Firebase Authentication tem UID igual ao ADMIN_UID no firebase-config.js e na regra isAdmin().
-5. Hospede o site em um servidor HTTPS (por exemplo, Firebase Hosting). Não abra index.html diretamente como arquivo local, pois os módulos JavaScript e o Firebase precisam de servidor.
-6. Teste em janela anônima: enviar uma confirmação, confirmar que os dados não podem ser lidos publicamente, e conferir o painel administrativo.
-7. Os envios públicos de RSVP não têm proteção antispam avançada. Para uso público, considere App Check/reCAPTCHA ou uma camada de backend com limitação de requisições.
-8. A regra de confirmação aceita envio público e restringe leitura/edição/exclusão ao UID administrativo, mas as regras devem ser testadas no Firebase Emulator antes de considerar o projeto pronto para produção.
-
-DETALHES DO EVENTO
-Data: 18/12/2026
-Horário: 18h
-Mapa: link fornecido pelo usuário.
