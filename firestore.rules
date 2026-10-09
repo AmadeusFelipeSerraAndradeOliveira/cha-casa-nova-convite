@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == "r8nildXd45ZkSPQwATATgPkWTZQ2";
+    }
+
+    match /presentes/{presenteId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin()
+        || (
+          resource.data.escolhido == false
+          && request.resource.data.escolhido == true
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["escolhido"])
+          && existsAfter(/databases/$(database)/documents/reservasPrivadas/$(presenteId))
+          && getAfter(/databases/$(database)/documents/reservasPrivadas/$(presenteId)).data.presenteId == presenteId
+        );
+    }
+
+    match /reservasPrivadas/{presenteId} {
+      allow read: if isAdmin();
+      allow create: if request.auth == null
+        && !exists(/databases/$(database)/documents/reservasPrivadas/$(presenteId))
+        && request.resource.data.keys().hasOnly(["presenteId", "nome", "mensagem", "criadoEm"])
+        && request.resource.data.presenteId == presenteId
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() >= 2
+        && request.resource.data.nome.size() <= 80
+        && request.resource.data.mensagem is string
+        && request.resource.data.mensagem.size() >= 3
+        && request.resource.data.mensagem.size() <= 500
+        && get(/databases/$(database)/documents/presentes/$(presenteId)).data.escolhido == false
+        && getAfter(/databases/$(database)/documents/presentes/$(presenteId)).data.escolhido == true;
+      allow update, delete: if isAdmin();
+    }
+
+    match /confirmacoesPrivadas/{confirmacaoId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if request.auth == null
+        && request.resource.data.keys().hasOnly(["nome", "quantidade", "resposta", "mensagem", "criadoEm"])
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() >= 2
+        && request.resource.data.nome.size() <= 100
+        && request.resource.data.quantidade is int
+        && request.resource.data.quantidade >= 0
+        && request.resource.data.quantidade <= 6
+        && request.resource.data.resposta in ["sim", "nao"]
+        && request.resource.data.mensagem is string
+        && request.resource.data.mensagem.size() <= 400
+        && (
+          (request.resource.data.resposta == "sim" && request.resource.data.quantidade >= 1)
+          || (request.resource.data.resposta == "nao" && request.resource.data.quantidade == 0)
+        );
+    }
+  }
+}
