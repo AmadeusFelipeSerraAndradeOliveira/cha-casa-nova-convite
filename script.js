@@ -1,4 +1,3 @@
-
 import {
   collection,
   getDocs,
@@ -15,7 +14,7 @@ import { db } from "./firebase-config.js";
 // CONFIGURAÇÕES
 // =============================================
 
-const DATA_EVENTO = new Date(2026, 11, 12, 18, 0, 0);
+const DATA_EVENTO = new Date(2026, 11, 12, 19, 0, 0);
 
 const listaPresentes = document.getElementById("lista-presentes");
 const formRsvp = document.getElementById("form-rsvp");
@@ -108,8 +107,6 @@ if (formRsvp) {
     try {
       const referencia = doc(db, "confirmacoesPrivadas", nomeKey);
 
-      // A regra do Firestore deve permitir criação, mas não
-      // atualização por visitantes. Assim, o mesmo ID não se repete.
       await setDoc(referencia, {
         nome,
         resposta,
@@ -188,11 +185,13 @@ async function carregarPresentes() {
 
           if (url.protocol === "https:" || url.protocol === "http:") {
             const imagem = document.createElement("img");
+
             imagem.src = url.href;
             imagem.alt = presente.nome || "Imagem do presente";
             imagem.loading = "lazy";
             imagem.style.maxWidth = "100%";
             imagem.style.height = "auto";
+
             card.appendChild(imagem);
           }
         } catch {
@@ -223,6 +222,7 @@ async function carregarPresentes() {
 
         botao.type = "button";
         botao.addEventListener("click", () => abrirModalReserva(presente));
+
         card.appendChild(botao);
       }
 
@@ -239,13 +239,11 @@ async function carregarPresentes() {
 // MODAL DE RESERVA
 // =============================================
 
-
 function criarModalReserva() {
   let modal = document.getElementById("modal-reserva");
 
   if (modal) return modal;
 
-  // Estilos do modal
   if (!document.getElementById("estilo-modal-reserva")) {
     const estilo = document.createElement("style");
     estilo.id = "estilo-modal-reserva";
@@ -430,7 +428,6 @@ function criarModalReserva() {
     document.head.appendChild(estilo);
   }
 
-  // Estrutura do modal
   modal = document.createElement("div");
   modal.id = "modal-reserva";
 
@@ -446,11 +443,7 @@ function criarModalReserva() {
     "CHÁ DE CASA NOVA"
   );
 
-  const titulo = criarElemento(
-    "h2",
-    "",
-    "Escolha com carinho"
-  );
+  const titulo = criarElemento("h2", "", "Escolha com carinho");
   titulo.id = "titulo-modal-reserva";
 
   const descricao = criarElemento(
@@ -493,10 +486,7 @@ function criarModalReserva() {
 
   const botoes = criarElemento("div", "reserva-botoes");
 
-  const cancelar = criarBotaoReserva(
-    "Voltar",
-    "botao-cancelar-reserva"
-  );
+  const cancelar = criarBotaoReserva("Voltar", "botao-cancelar-reserva");
 
   const confirmar = criarBotaoReserva(
     "Confirmar reserva ❤️",
@@ -509,7 +499,6 @@ function criarModalReserva() {
 
   botoes.append(cancelar, confirmar);
   formulario.append(campoNome, campoMensagem, status, botoes);
-
   formulario.addEventListener("submit", enviarReserva);
 
   caixa.append(selo, titulo, descricao, nomePresente, formulario);
@@ -570,7 +559,6 @@ function criarBotaoReserva(texto, classe) {
   return botao;
 }
 
-
 function abrirModalReserva(presente) {
   if (presente.escolhido) {
     alert("Este presente já foi escolhido.");
@@ -588,6 +576,7 @@ function abrirModalReserva(presente) {
   document.getElementById("reserva-status").textContent = "";
 
   modal.style.display = "flex";
+
   document.getElementById("reserva-nome").focus();
 }
 
@@ -601,7 +590,7 @@ function fecharModalReserva() {
 }
 
 // =============================================
-// RESERVAR PRESENTE SEM CÓDIGO
+// RESERVAR PRESENTE E CONFIRMAR PRESENÇA
 // =============================================
 
 async function enviarReserva(evento) {
@@ -610,16 +599,19 @@ async function enviarReserva(evento) {
   if (reservandoPresente || !presenteSelecionado) return;
 
   const presente = presenteSelecionado;
+
   const nome = String(
     document.getElementById("reserva-nome")?.value || ""
   ).trim();
 
   const nomeKey = normalizarNome(nome);
+
   const mensagem = String(
     document.getElementById("reserva-mensagem")?.value || ""
   ).trim();
 
   const status = document.getElementById("reserva-status");
+
   const botao = document.querySelector(
     "#form-reserva button[type='submit']"
   );
@@ -654,8 +646,10 @@ async function enviarReserva(evento) {
     const reservaRef = doc(db, "reservasPrivadas", presente.id);
     const nomeRef = doc(db, "reservasPorNome", nomeKey);
 
+    // Cria um único lote para salvar tudo junto.
     const lote = writeBatch(db);
 
+    // Registra a reserva do presente.
     lote.set(reservaRef, {
       presenteId: presente.id,
       nome,
@@ -664,21 +658,35 @@ async function enviarReserva(evento) {
       criadoEm: serverTimestamp()
     });
 
+    // Registra o nome associado à reserva.
     lote.set(nomeRef, {
       presenteId: presente.id,
       nomeKey,
       criadoEm: serverTimestamp()
     });
 
+    // Marca o presente como escolhido.
     lote.update(presenteRef, {
       escolhido: true
     });
 
+    // CONFIRMA AUTOMATICAMENTE A PRESENÇA.
+    // Corrigido: usamos lote.set(), não batch.set().
+    lote.set(
+      doc(db, "confirmacoesPrivadas", nomeKey),
+      {
+        nome,
+        resposta: "sim",
+        criadoEm: serverTimestamp()
+      }
+    );
+
+    // Grava a reserva e a confirmação de presença juntas.
     await lote.commit();
 
     mostrarMensagem(
       status,
-      "Presente reservado com sucesso! Obrigado pelo carinho ❤️",
+      "Presente reservado com sucesso! Sua presença está confirmada ❤️",
       true
     );
 
@@ -686,9 +694,12 @@ async function enviarReserva(evento) {
 
     window.setTimeout(() => {
       const modalAtual = document.getElementById("modal-reserva");
+
       if (modalAtual) modalAtual.style.display = "none";
+
       presenteSelecionado = null;
     }, 1400);
+
   } catch (erro) {
     if (
       erro?.message === "Este presente não está mais disponível." ||
@@ -699,12 +710,13 @@ async function enviarReserva(evento) {
       mostrarMensagem(
         status,
         erro?.code === "permission-denied"
-          ? "Não foi possível registrar. Esse nome pode já ter sido usado ou você já reservou!!"
+          ? "Não foi possível registrar. Confira as regras de segurança do Firebase ou se esse nome já foi utilizado."
           : formatarErro(erro)
       );
     }
   } finally {
     reservandoPresente = false;
+
     if (botao) botao.disabled = false;
   }
 }
@@ -752,11 +764,9 @@ function atualizarContagemRegressiva() {
 // INICIALIZAÇÃO
 // =============================================
 
-
 function iniciarSite() {
   console.log("Inicializando Chá de Casa Nova...");
 
-  // Inicia a contagem imediatamente e atualiza a cada segundo.
   atualizarContagemRegressiva();
 
   if (window.intervaloContagem) {
@@ -768,7 +778,6 @@ function iniciarSite() {
     1000
   );
 
-  // Carrega os presentes do Firebase.
   carregarPresentes();
 }
 
