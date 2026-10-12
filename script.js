@@ -593,6 +593,7 @@ function fecharModalReserva() {
 // RESERVAR PRESENTE E CONFIRMAR PRESENÇA
 // =============================================
 
+
 async function enviarReserva(evento) {
   evento.preventDefault();
 
@@ -646,10 +647,9 @@ async function enviarReserva(evento) {
     const reservaRef = doc(db, "reservasPrivadas", presente.id);
     const nomeRef = doc(db, "reservasPorNome", nomeKey);
 
-    // Cria um único lote para salvar tudo junto.
+    // Primeiro, salva a reserva do presente.
     const lote = writeBatch(db);
 
-    // Registra a reserva do presente.
     lote.set(reservaRef, {
       presenteId: presente.id,
       nome,
@@ -658,47 +658,67 @@ async function enviarReserva(evento) {
       criadoEm: serverTimestamp()
     });
 
-    // Registra o nome associado à reserva.
     lote.set(nomeRef, {
       presenteId: presente.id,
       nomeKey,
       criadoEm: serverTimestamp()
     });
 
-    // Marca o presente como escolhido.
     lote.update(presenteRef, {
       escolhido: true
     });
 
-    // CONFIRMA AUTOMATICAMENTE A PRESENÇA.
-    // Corrigido: usamos lote.set(), não batch.set().
-    lote.set(
-      doc(db, "confirmacoesPrivadas", nomeKey),
-      {
-        nome,
-        resposta: "sim",
-        criadoEm: serverTimestamp()
-      }
-    );
-
-    // Grava a reserva e a confirmação de presença juntas.
+    // A reserva é confirmada independentemente da
+    // tentativa posterior de gravar a presença.
     await lote.commit();
 
-    mostrarMensagem(
-      status,
-      "Presente reservado com sucesso! Sua presença está confirmada ❤️",
-      true
-    );
+    let presencaGravada = false;
+
+    try {
+      // Se ainda não houver confirmação, cria uma.
+      // Se já existir, o Firebase pode bloquear a atualização.
+      await setDoc(
+        doc(db, "confirmacoesPrivadas", nomeKey),
+        {
+          nome,
+          resposta: "sim",
+          criadoEm: serverTimestamp()
+        }
+      );
+
+      presencaGravada = true;
+    } catch (erroPresenca) {
+      console.warn(
+        "A reserva foi salva, mas a confirmação não pôde ser atualizada:",
+        erroPresenca
+      );
+    }
+
+    if (presencaGravada) {
+      mostrarMensagem(
+        status,
+        "Presente reservado e presença confirmada! ❤️",
+        true
+      );
+    } else {
+      mostrarMensagem(
+        status,
+        "Presente reservado com sucesso! Se você já havia confirmado presença, sua confirmação anterior permanece registrada. ❤️",
+        true
+      );
+    }
 
     await carregarPresentes();
 
     window.setTimeout(() => {
       const modalAtual = document.getElementById("modal-reserva");
 
-      if (modalAtual) modalAtual.style.display = "none";
+      if (modalAtual) {
+        modalAtual.style.display = "none";
+      }
 
       presenteSelecionado = null;
-    }, 1400);
+    }, 2500);
 
   } catch (erro) {
     if (
@@ -710,7 +730,7 @@ async function enviarReserva(evento) {
       mostrarMensagem(
         status,
         erro?.code === "permission-denied"
-          ? "Não foi possível registrar. Confira as regras de segurança do Firebase ou se esse nome já foi utilizado."
+          ? "O Firebase bloqueou a reserva. Confira as regras de segurança."
           : formatarErro(erro)
       );
     }
@@ -720,6 +740,7 @@ async function enviarReserva(evento) {
     if (botao) botao.disabled = false;
   }
 }
+
 
 // =============================================
 // CONTAGEM REGRESSIVA
