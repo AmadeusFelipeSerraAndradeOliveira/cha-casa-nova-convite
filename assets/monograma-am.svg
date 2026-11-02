@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title desc">
+  <title id="title">Monograma Amadeus e Maria</title>
+  <desc id="desc">As iniciais A e M sob o desenho de um lar, em traços dourados.</desc>
+  <circle cx="120" cy="120" r="106" fill="none" stroke="#C5A66D" stroke-width="2.5"/>
+  <circle cx="120" cy="120" r="97" fill="none" stroke="#E6D8B7" stroke-width="1" opacity=".72"/>
+  <path d="M75 98 120 59l45 39M84 91v34h72V91M108 125v-20q12-15 24 0v20" fill="none" stroke="#C5A66D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="120" y="172" text-anchor="middle" fill="#E6D8B7" font-family="Georgia,serif" font-size="47" font-style="italic" letter-spacing="-3">A<tspan fill="#C5A66D" font-size="24" font-style="normal"> &amp; </tspan>M</text>
+  <path d="M91 191c10-7 19-7 29 0 10-7 19-7 29 0" fill="none" stroke="#C5A66D" stroke-width="2" stroke-linecap="round"/>
+</svg>
+
