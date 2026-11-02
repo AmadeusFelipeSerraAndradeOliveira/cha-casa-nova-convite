@@ -36,7 +36,7 @@ figure, p, h1, h2, h3 { margin-top: 0; }
   isolation: isolate;
   overflow: hidden;
   padding: 38px 18px;
-  background: linear-gradient(180deg, rgba(22,39,32,.57), rgba(22,39,32,.68)), url("./assets/fotos/lago.jpg") center 52% / cover no-repeat, var(--forest);
+  background: radial-gradient(ellipse at 50% 36%, #fffdf8 0, #f4f1e8 55%, #e4e7dd 100%);
 }
 .cover-stage[hidden] { display: none; }
 .cover-stage::before, .cover-stage::after { content: ""; position: absolute; z-index: -1; width: min(60vw, 600px); aspect-ratio: 1; border: 1px solid rgba(197,166,109,.2); border-radius: 50%; }
@@ -45,7 +45,7 @@ figure, p, h1, h2, h3 { margin-top: 0; }
 .cover-glow { position: absolute; z-index: -1; width: 260px; aspect-ratio: 1; border-radius: 50%; filter: blur(3px); pointer-events: none; }
 .cover-glow-left { top: 17%; left: -160px; background: rgba(168,180,158,.24); }
 .cover-glow-right { right: -160px; bottom: 10%; background: rgba(197,166,109,.17); }
-.cover-overline, .cover-hint { margin: 0; color: #fff9e9; font-size: 10px; letter-spacing: .23em; text-align: center; text-transform: uppercase; }
+.cover-overline, .cover-hint { margin: 0; color: var(--forest-soft); font-size: 10px; letter-spacing: .23em; text-align: center; text-transform: uppercase; }
 .cover-overline { animation: fade-up .75s both; }
 .invite-card {
   position: relative;
@@ -85,7 +85,7 @@ figure, p, h1, h2, h3 { margin-top: 0; }
 .card-corner { position: absolute; color: rgba(230,216,183,.52); font: 56px/1 var(--serif); }
 .card-corner-top { top: -4px; left: 7px; transform: rotate(-40deg); }
 .card-corner-bottom { right: 7px; bottom: -4px; transform: rotate(140deg); }
-.cover-house { display: grid; place-items: center; width: 54px; aspect-ratio: 1; margin: 0 0 22px; border: 1px solid rgba(230,216,183,.48); border-radius: 50%; color: var(--gold-light); font: 35px/1 var(--serif); }
+.cover-logo { display: block; width: 74px; height: 74px; margin: 0 0 18px; object-fit: contain; }
 .cover-kicker { color: #d7c89f; font-size: 8px; letter-spacing: .19em; line-height: 1.8; }
 .cover-heading { margin-top: 17px; color: #fff9e9; font: 400 clamp(30px, 8vw, 42px)/1.16 var(--serif); }
 .cover-heading em { color: #e4cf9c; font-weight: 400; }
@@ -102,6 +102,10 @@ figure, p, h1, h2, h3 { margin-top: 0; }
 .cover-stage.opening .invite-card { transform: perspective(1000px) rotateY(-105deg) translateX(-50px); opacity: 0; pointer-events: none; }
 .cover-stage.opening .cover-overline, .cover-stage.opening .cover-hint { opacity: 0; transition: opacity .25s; }
 
+body:not(.invite-open) { overflow: hidden; }
+body:not(.invite-open) .site-nav,
+body:not(.invite-open) main,
+body:not(.invite-open) .site-footer { display: none; }
 .site-nav {
   position: sticky;
   top: 0;
@@ -118,7 +122,7 @@ figure, p, h1, h2, h3 { margin-top: 0; }
   -webkit-backdrop-filter: blur(14px);
 }
 .brand-mark { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--forest); }
-.brand-mark > span { display: grid; place-items: center; width: 35px; aspect-ratio: 1; border: 1px solid var(--gold); border-radius: 50%; font: 24px/1 var(--serif); }
+.brand-logo { width: 40px; height: 40px; flex-shrink: 0; padding: 2px; border-radius: 50%; background: var(--forest); object-fit: contain; }
 .brand-mark b { font: 15px var(--serif); letter-spacing: .1em; }
 .brand-mark i { color: #a58752; font-style: normal; }
 .nav-links { display: flex; align-items: center; gap: clamp(18px, 3.3vw, 44px); }
@@ -204,7 +208,8 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; }
 .venue-update-copy { min-width: 0; }
 .venue-kicker { margin: 0 0 6px; color: #92794d; font-size: 8px; font-weight: 700; letter-spacing: .17em; }
 .venue-update h3 { margin: 0 0 5px; color: var(--forest); font-size: 25px; }
-.venue-update-copy > p:not(.venue-kicker):not(.venue-coordinates) { margin: 0; color: #69736a; font-size: 11px; line-height: 1.6; }
+.venue-update-copy > p:not(.venue-kicker):not(.venue-address) { margin: 0; color: #69736a; font-size: 11px; line-height: 1.6; }
+.venue-address { margin-top: 6px !important; color: var(--forest) !important; font-size: 12px !important; line-height: 1.55 !important; }
 .venue-coordinates { margin: 7px 0 0; color: #657367; font-size: 10px; font-variant-numeric: tabular-nums; letter-spacing: .06em; }
 .venue-coordinates span { padding-inline: 5px; color: #b09460; }
 .venue-map { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 13px 15px; background: var(--forest); color: #fff9e9; font-size: 9px; text-decoration: none; white-space: nowrap; transition: background .2s, transform .2s; }
@@ -276,7 +281,8 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; }
 .mensagem-erro { color: #a43a36 !important; }
 
 .site-footer { display: flex; flex-direction: column; align-items: center; padding: 48px 20px 35px; border-top: 1px solid rgba(36,59,53,.09); background: var(--forest); color: #f4eedf; text-align: center; }
-.footer-mark { display: grid; place-items: center; width: 46px; aspect-ratio: 1; margin-bottom: 15px; border: 1px solid var(--gold); border-radius: 50%; color: #e5d2a4; font: 29px/1 var(--serif); text-decoration: none; }
+.footer-mark { display: grid; place-items: center; width: 52px; aspect-ratio: 1; margin-bottom: 15px; text-decoration: none; }
+.footer-logo { display: block; width: 100%; height: 100%; object-fit: contain; }
 .site-footer > p { margin-bottom: 15px; font: italic 18px/1.6 var(--serif); }
 .site-footer > p em { color: #e0cc99; }
 .site-footer > span { color: #c7c6b6; font-size: 8px; letter-spacing: .16em; }
@@ -324,7 +330,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; }
 @media (max-width: 650px) {
   html { scroll-padding-top: 69px; }
   .site-nav { min-height: 64px; gap: 12px; padding-inline: 17px; }
-  .brand-mark > span { width: 31px; font-size: 22px; }
+  .brand-logo { width: 36px; height: 36px; }
   .brand-mark b { font-size: 13px; }
   .nav-links { display: none; }
   .nav-cta { gap: 8px; padding: 10px 11px; font-size: 9px; }
@@ -390,7 +396,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; }
   .invite-card { min-height: 410px; }
   .invite-card-inner { padding-inline: 18px; }
   .cover-heading { font-size: 33px; }
-  .cover-house { margin-bottom: 18px; }
+  .cover-logo { width: 68px; height: 68px; margin-bottom: 16px; }
   .cover-flourish { margin-block: 17px; }
   .hero-actions { align-items: flex-start; flex-direction: column; gap: 14px; }
   .photo-grid { grid-template-rows: repeat(5, 155px); }
