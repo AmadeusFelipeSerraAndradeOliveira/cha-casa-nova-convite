@@ -12,6 +12,13 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+  <noscript><style>
+    body:not(.invite-open) { overflow: auto; }
+    body:not(.invite-open) .site-nav { display: flex; }
+    body:not(.invite-open) main { display: block; }
+    body:not(.invite-open) .site-footer { display: flex; }
+    .cover-stage { display: none; }
+  </style></noscript>
   <section class="cover-stage" id="coverStage" aria-label="Capa do convite">
     <div class="cover-glow cover-glow-left" aria-hidden="true"></div>
     <div class="cover-glow cover-glow-right" aria-hidden="true"></div>
@@ -20,7 +27,7 @@
     <button class="invite-card" id="openInvite" type="button" aria-label="Abrir convite do chá de casa nova de Amadeus e Maria">
       <span class="invite-card-inner">
         <span class="card-corner card-corner-top" aria-hidden="true">❧</span>
-        <span class="cover-house" aria-hidden="true">⌂</span>
+        <img class="cover-logo" src="./assets/monograma-am.svg" alt="" aria-hidden="true">
         <span class="cover-kicker">COM CARINHO, CONVIDAMOS VOCÊ PARA</span>
         <span class="cover-heading">Nosso Chá de<br><em>Casa Nova</em></span>
         <span class="cover-flourish" aria-hidden="true"><i></i> ✦ <i></i></span>
@@ -35,7 +42,7 @@
   </section>
 
   <nav class="site-nav" aria-label="Navegação principal">
-    <a class="brand-mark" href="#inicio" aria-label="Amadeus e Maria, início"><span>⌂</span><b>A <i>&amp;</i> M</b></a>
+    <a class="brand-mark" href="#inicio" aria-label="Amadeus e Maria, início"><img class="brand-logo" src="./assets/monograma-am.svg" alt="" aria-hidden="true"><b>A <i>&amp;</i> M</b></a>
     <div class="nav-links">
       <a href="#historia">Nossa história</a>
       <a href="#detalhes">O encontro</a>
@@ -129,10 +136,10 @@
           <div class="venue-update-copy">
             <p class="venue-kicker">AVISO IMPORTANTE · NOVO LOCAL</p>
             <h3 id="venue-update-title">Mudamos de local!</h3>
-            <p>Nosso encontro agora será no <strong>Iman Dulce</strong>. Salve este endereço atualizado para chegar direitinho.</p>
-            <p class="venue-coordinates">10°18'05.0&quot;S <span>·</span> 48°18'41.5&quot;W</p>
+            <p>Para chegar direitinho, anote o novo endereço:</p>
+            <p class="venue-address"><strong>R. 9, 24 - Plano Diretor Sul<br>Palmas - TO, 77059-002</strong></p>
           </div>
-          <a class="venue-map" href="https://www.google.com/maps/place/Iman+dulce/@-10.3010661,-48.3120966,19z/data=!4m6!3m5!1s0x933b31000e67cbf1:0xb2761c2c64aeee1!8m2!3d-10.3003165!4d-48.3117828!16s%2Fg%2F11yr4dbytp?entry=ttu&amp;g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer">Ver novo local no mapa <span aria-hidden="true">↗</span></a>
+          <a class="venue-map" href="https://maps.app.goo.gl/BSjbqgV6M9t5qaYP9" target="_blank" rel="noopener noreferrer">Abrir endereço no Google Maps <span aria-hidden="true">↗</span></a>
         </aside>
 
         <div class="event-card-grid" data-reveal>
@@ -148,9 +155,9 @@
           <article class="event-card">
             <span class="event-icon" aria-hidden="true">⌖</span>
             <p class="card-kicker">ONDE</p>
-            <h3>Iman Dulce</h3>
-            <p class="event-year">Nosso novo local de encontro.</p>
-            <a class="text-link" href="https://www.google.com/maps/place/Iman+dulce/@-10.3010661,-48.3120966,19z/data=!4m6!3m5!1s0x933b31000e67cbf1:0xb2761c2c64aeee1!8m2!3d-10.3003165!4d-48.3117828!16s%2Fg%2F11yr4dbytp?entry=ttu&amp;g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer">Abrir localização <span aria-hidden="true">↗</span></a>
+            <h3>R. 9, 24</h3>
+            <p class="event-year">Plano Diretor Sul<br>Palmas - TO, 77059-002</p>
+            <a class="text-link" href="https://maps.app.goo.gl/BSjbqgV6M9t5qaYP9" target="_blank" rel="noopener noreferrer">Abrir endereço <span aria-hidden="true">↗</span></a>
           </article>
 
           <article class="event-card">
@@ -225,7 +232,7 @@
   </main>
 
   <footer class="site-footer">
-    <a class="footer-mark" href="#inicio" aria-label="Voltar ao início">⌂</a>
+    <a class="footer-mark" href="#inicio" aria-label="Voltar ao início"><img class="footer-logo" src="./assets/monograma-am.svg" alt="" aria-hidden="true"></a>
     <p>Um lar é feito de paredes.<br><em>Um lar feliz é feito de pessoas.</em></p>
     <span>COM AMOR, PARA UM NOVO COMEÇO · 2026</span>
     <a class="admin-link" href="./admin.html">Acesso administrativo ↗</a>
@@ -238,6 +245,7 @@
       const button = document.getElementById("openInvite");
       if (stage && button) {
         button.addEventListener("click", () => {
+          document.body.classList.add("invite-open");
           if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
             stage.hidden = true;
             return;
